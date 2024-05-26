@@ -13,8 +13,8 @@ const PORT = process.env.PORT || 8080;
 app.use(
   cors({
     //origin:"*",
-    //origin:"https://bartaloy24server.vercel.app/",
-    origin: "http://localhost:3000",
+    origin:"https://bartaloy24.vercel.app/",
+    //origin: "http://localhost:3000",
     methods: ["POST", "PUT", "GET", "DELETE", "OPTIONS", "HEAD"],
     credentials: true,
   })
