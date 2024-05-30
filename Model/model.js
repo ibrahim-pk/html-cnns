@@ -99,6 +99,13 @@ const NewsSchema = new mongoose.Schema(
     bio:{
       type: String,
     },
+    pb:{
+      type: Boolean,
+      default:false
+    },
+    repoter:{
+      type: String,
+    },
     isLiveUpdate: {
       type: String,
     },

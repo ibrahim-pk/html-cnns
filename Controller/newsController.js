@@ -10,9 +10,7 @@ const {
 const mongodb = require("mongodb");
 const uuid = require("uuid");
 const bcrypt = require("bcrypt");
-const client = new mongodb.MongoClient(
-  "mongodb+srv://emon:12345@cluster0.tfzr2.mongodb.net/cnn-news?retryWrites=true&w=majority"
-);
+const client = new mongodb.MongoClient(process.env.MONGO_URI);
 
 exports.getNewsByArticleId = async (req, res) => {
   try {
@@ -47,7 +45,7 @@ exports.getNews = async (req, res) => {
       query.tag = tag;
     }
     const selectedFields =
-      "_id file title tag newsCategory subCategory liveUpdateType";
+      "_id file title tag newsCategory subCategory liveUpdateType pb";
 
     let newsQuery = News.find(query)
       .select(selectedFields)
@@ -61,7 +59,7 @@ exports.getNews = async (req, res) => {
       );
 
     const news = await newsQuery.exec();
-   // console.log("news is: ", news);
+    //console.log("news is: ", news);
     res.status(200).json(news);
   } catch (error) {
     console.log(error);
@@ -352,10 +350,45 @@ exports.filesForNewsByFilename = async function (req, res) {
   });
 };
 exports.updateNews = async function (req, res) {
-  //console.log("filename is: ", req.body?.filename);
+   console.log("filename is: ", req.body);
   // Get the file object from req?.file
   const newsIdToUpdate = req.body.id; // Replace with the actual ID of the news article you want to update
-  if (req?.file) {
+  //console.log(req.body.pb);
+  if(req.body?.pb){
+    News.findOneAndUpdate(
+      { _id: newsIdToUpdate },
+      req.body.pb===1?
+      {
+        $set: {
+          pb:true
+          
+        },
+      }:{
+        $set: {
+          pb:false
+          
+        },
+      },
+      { new: true } // Set to true if you want to return the modified document
+    )
+      .then((updatedNews) => {
+        if (!updatedNews) {
+          return res.status(404).send({
+            message: `News article with id ${newsIdToUpdate} not found.`,
+          });
+        }
+        res.send({message:"News Updated Successfully."});
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message ||
+            "Some error occurred while updating the news article.",
+        });
+      });
+  }
+  
+  else if (req?.file) {
     // Get the database
     const filename = req.body?.filename;
     //console.log("Mongodb connected");
@@ -387,7 +420,7 @@ exports.updateNews = async function (req, res) {
       console.error(error);
       return res.status(500).json({ message: "Error updating image" });
     });
-
+   
     uploadStream.on("finish", () => {
       News.findOneAndUpdate(
         { _id: newsIdToUpdate },
@@ -410,7 +443,7 @@ exports.updateNews = async function (req, res) {
               message: `News article with id ${newsIdToUpdate} not found.`,
             });
           }
-          res.send("News Updated Successfully.");
+          res.send({message:"News Updated Successfully."});
         })
         .catch((err) => {
           res.status(500).send({
@@ -441,7 +474,7 @@ exports.updateNews = async function (req, res) {
             message: `News article with id ${newsIdToUpdate} not found.`,
           });
         }
-        res.send("News Updated Successfully.");
+        res.send({message:"News Updated Successfully."});
       })
       .catch((err) => {
         res.status(500).send({
@@ -574,6 +607,7 @@ exports.createNews = async function (req, res) {
               editorText: req.body.editorText,
               authorName: req.body.authorName,
               bio:req.body.bio,
+              repoter:req.body.repoter,
               isLiveUpdate: req.body.isLiveUpdate,
               liveUpdateType: req.body.liveUpdateType,
               liveUpdateHeadline: req.body.liveUpdateHeadlinie,
@@ -601,6 +635,8 @@ exports.createNews = async function (req, res) {
         tag: req.body.tag,
         editorText: req.body.editorText,
         authorName: req.body.authorName,
+        bio:req.body.bio,
+        repoter:req.body.repoter,
         isLiveUpdate: req.body.isLiveUpdate,
         liveUpdateType: req.body.liveUpdateType,
         liveUpdateHeadline: req.body.liveUpdateHeadlinie,

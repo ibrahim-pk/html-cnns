@@ -2,9 +2,7 @@ const mongoose = require("mongoose");
 const { Role, Tag, Type } = require("./Model/model");
 
 // Connect to MongoDB
-mongoose.connect(
-  "mongodb+srv://emon:12345@cluster0.tfzr2.mongodb.net/cnn-news?retryWrites=true&w=majority"
-);
+mongoose.connect(process.env.MONGO_URI);
 
 // Data for roles, tags, and news types
 const rolesData = [

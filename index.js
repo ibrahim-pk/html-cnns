@@ -6,21 +6,23 @@ const dotenv = require("dotenv");
 const session = require("express-session");
 dotenv.config({ path: ".env" });
 const { connectDB } = require("./Database/connection");
+const path = require('path');
 const PORT = process.env.PORT || 8080;
 
 //const socketIO = require("socket.io");
 
-// app.use(
-//   cors({
-//     //origin:"*",
-//     origin:"https://bartaloy24.vercel.app/",
-//     //origin: "http://localhost:3000",
-//     methods: ["POST", "PUT", "GET", "DELETE", "OPTIONS", "HEAD"],
-//     credentials: true,
-//   })
-// );
-app.use(cors())
-app.use(bodyParser.json());
+app.use(
+  cors({
+    origin:"*",
+    // //origin:"https://bartaloy24.vercel.app/",
+    // origin: "http://localhost:3000",
+    // methods: ["POST", "PUT", "GET", "DELETE", "OPTIONS", "HEAD"],
+    // credentials: true,
+  })
+);
+//app.use(cors())
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.use(
   session({
