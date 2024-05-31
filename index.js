@@ -9,30 +9,40 @@ const { connectDB } = require("./Database/connection");
 const path = require('path');
 const PORT = process.env.PORT || 8080;
 
+
+
+
+const corsOptions = {
+  origin: 'https://bartaloy24.com',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 //const socketIO = require("socket.io");
 
-app.use(
-  cors({
-     origin:"*",
-    //origin:"https://bartaloy24.com/",
-   // origin: "http://localhost:3000",
-    methods: ["POST", "PUT", "GET", "DELETE", "OPTIONS", "HEAD"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//      origin:"*",
+//     //origin:"https://bartaloy24.com/",
+//    // origin: "http://localhost:3000",
+//     methods: ["POST", "PUT", "GET", "DELETE", "OPTIONS", "HEAD"],
+//     credentials: true,
+//   })
+// );
 //app.use(cors())
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-app.use(
-  session({
-    secret: "your_secret_key",
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 7 days
-  })
-);
+// app.use(
+//   session({
+//     secret: "your_secret_key",
+//     resave: false,
+//     saveUninitialized: false,
+//     rolling: true,
+//     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 7 days
+//   })
+// );
 
 connectDB();
 //insertData()
