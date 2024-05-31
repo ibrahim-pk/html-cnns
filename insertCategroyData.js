@@ -1,7 +1,8 @@
 const { Category } = require("./Model/model");
 
 const mongoose = require("mongoose");
-
+const dotenv = require("dotenv");
+dotenv.config();
 async function populateDatabase(data) {
   try {
     await Category.deleteMany({});

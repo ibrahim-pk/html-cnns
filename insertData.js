@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Role, Tag, Type } = require("./Model/model");
-
+const dotenv = require("dotenv");
+dotenv.config();
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI);
 

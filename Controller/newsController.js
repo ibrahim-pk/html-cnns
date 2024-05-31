@@ -10,6 +10,8 @@ const {
 const mongodb = require("mongodb");
 const uuid = require("uuid");
 const bcrypt = require("bcrypt");
+const dotenv = require("dotenv");
+dotenv.config();
 const client = new mongodb.MongoClient(process.env.MONGO_URI);
 
 exports.getNewsByArticleId = async (req, res) => {
