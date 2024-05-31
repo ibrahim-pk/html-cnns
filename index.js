@@ -42,7 +42,7 @@ const server = app.listen(PORT, () => {
 });
 
 app.get("/test",(req,res)=>{
-  res.send("Hello server bartaloy24")
+  res.send("Hello bartaloy24 server")
 })
 
 // const io = socketIO(server, {
