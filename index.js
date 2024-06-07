@@ -13,7 +13,8 @@ const PORT = process.env.PORT || 8080;
 
 
 const corsOptions = {
-  origin: 'https://bartaloy24.com',
+  origin: "http://localhost:3000",
+  //origin: 'https://bartaloy24.com',
   credentials: true,
 };
 
@@ -52,7 +53,7 @@ const server = app.listen(PORT, () => {
 });
 
 app.get("/test",(req,res)=>{
-  res.send("Hello bartaloy24 server")
+  res.send("Hello bartaloy24 server2")
 })
 
 // const io = socketIO(server, {

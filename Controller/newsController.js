@@ -352,7 +352,7 @@ exports.filesForNewsByFilename = async function (req, res) {
   });
 };
 exports.updateNews = async function (req, res) {
-   console.log("filename is: ", req.body);
+  // console.log("filename is: ", req.body);
   // Get the file object from req?.file
   const newsIdToUpdate = req.body.id; // Replace with the actual ID of the news article you want to update
   //console.log(req.body.pb);
@@ -388,81 +388,13 @@ exports.updateNews = async function (req, res) {
             "Some error occurred while updating the news article.",
         });
       });
-  }
-  
-  else if (req?.file) {
-    // Get the database
-    const filename = req.body?.filename;
-    //console.log("Mongodb connected");
-    const db = client.db("cnn-news");
-
-    const bucket = new mongodb.GridFSBucket(db);
-
-    const file = req?.file;
-    const fileBuffer = file.buffer;
-
-    // Find the existing file in GridFS by filename
-    // const existingFile = await db.collection("fs?.files").findOne({ filename });
-
-    // if (!existingFile) {
-    //   return res.status(404).json({ message: "File not found" });
-    // }
-
-    // const fileId = existingFile?._id;
-    const uniqueIdentifier = uuid.v4();
-
-    // Create a new filename by combining the UUID and the original filename
-    const newFilename = `${uniqueIdentifier}_${file.originalname}`;
-    // Update the existing file in GridFS with the specified fileId
-    // Instead of specifying fileId, let MongoDB generate a new _id
-    const uploadStream = bucket.openUploadStream(newFilename);
-    uploadStream.end(fileBuffer);
-
-    uploadStream.on("error", (error) => {
-      console.error(error);
-      return res.status(500).json({ message: "Error updating image" });
-    });
-   
-    uploadStream.on("finish", () => {
-      News.findOneAndUpdate(
-        { _id: newsIdToUpdate },
-        {
-          $set: {
-            title: req.body?.title,
-            file: newFilename,
-            newsCategory: req.body.newsCategory,
-            subCategory: req.body.subCategory,
-            type: req.body.type,
-            editorText: req.body.editorText,
-            authorName: req.body.authorName,
-          },
-        },
-        { new: true } // Set to true if you want to return the modified document
-      )
-        .then((updatedNews) => {
-          if (!updatedNews) {
-            return res.status(404).send({
-              message: `News article with id ${newsIdToUpdate} not found.`,
-            });
-          }
-          res.send({message:"News Updated Successfully."});
-        })
-        .catch((err) => {
-          res.status(500).send({
-            message:
-              err.message ||
-              "Some error occurred while updating the news article.",
-          });
-        });
-
-      return res.status(200).json({ message: "Image updated successfully" });
-    });
-  } else {
+  }else{
     News.findOneAndUpdate(
       { _id: newsIdToUpdate },
       {
         $set: {
           title: req.body?.title,
+          file:req.body?.file,
           newsCategory: req.body.newsCategory,
           editorText: req.body.editorText,
           authorName: req.body.authorName,
@@ -486,6 +418,103 @@ exports.updateNews = async function (req, res) {
         });
       });
   }
+  
+  // else if (req?.file) {
+  //   // Get the database
+  //   const filename = req.body?.filename;
+  //   //console.log("Mongodb connected");
+  //   const db = client.db("cnn-news");
+
+  //   const bucket = new mongodb.GridFSBucket(db);
+
+  //   const file = req?.file;
+  //   const fileBuffer = file.buffer;
+
+  //   // Find the existing file in GridFS by filename
+  //   // const existingFile = await db.collection("fs?.files").findOne({ filename });
+
+  //   // if (!existingFile) {
+  //   //   return res.status(404).json({ message: "File not found" });
+  //   // }
+
+  //   // const fileId = existingFile?._id;
+  //   const uniqueIdentifier = uuid.v4();
+
+  //   // Create a new filename by combining the UUID and the original filename
+  //   const newFilename = `${uniqueIdentifier}_${file.originalname}`;
+  //   // Update the existing file in GridFS with the specified fileId
+  //   // Instead of specifying fileId, let MongoDB generate a new _id
+  //   const uploadStream = bucket.openUploadStream(newFilename);
+  //   uploadStream.end(fileBuffer);
+
+  //   uploadStream.on("error", (error) => {
+  //     console.error(error);
+  //     return res.status(500).json({ message: "Error updating image" });
+  //   });
+   
+  //   uploadStream.on("finish", () => {
+  //     News.findOneAndUpdate(
+  //       { _id: newsIdToUpdate },
+  //       {
+  //         $set: {
+  //           title: req.body?.title,
+  //           file: newFilename,
+  //           newsCategory: req.body.newsCategory,
+  //           subCategory: req.body.subCategory,
+  //           type: req.body.type,
+  //           editorText: req.body.editorText,
+  //           authorName: req.body.authorName,
+  //         },
+  //       },
+  //       { new: true } // Set to true if you want to return the modified document
+  //     )
+  //       .then((updatedNews) => {
+  //         if (!updatedNews) {
+  //           return res.status(404).send({
+  //             message: `News article with id ${newsIdToUpdate} not found.`,
+  //           });
+  //         }
+  //         res.send({message:"News Updated Successfully."});
+  //       })
+  //       .catch((err) => {
+  //         res.status(500).send({
+  //           message:
+  //             err.message ||
+  //             "Some error occurred while updating the news article.",
+  //         });
+  //       });
+
+  //     return res.status(200).json({ message: "Image updated successfully" });
+  //   });
+  // } else {
+  //   News.findOneAndUpdate(
+  //     { _id: newsIdToUpdate },
+  //     {
+  //       $set: {
+  //         title: req.body?.title,
+  //         newsCategory: req.body.newsCategory,
+  //         editorText: req.body.editorText,
+  //         authorName: req.body.authorName,
+  //       },
+  //     },
+  //     { new: true } // Set to true if you want to return the modified document
+  //   )
+  //     .then((updatedNews) => {
+  //       if (!updatedNews) {
+  //         return res.status(404).send({
+  //           message: `News article with id ${newsIdToUpdate} not found.`,
+  //         });
+  //       }
+  //       res.send({message:"News Updated Successfully."});
+  //     })
+  //     .catch((err) => {
+  //       res.status(500).send({
+  //         message:
+  //           err.message ||
+  //           "Some error occurred while updating the news article.",
+  //       });
+  //     });
+  // }
 };
 
 exports.getNewsById = async function (req, res) {
@@ -573,88 +602,120 @@ exports.getLastFiveLiveUpdateNewsType = async function (req, res) {
 };
 
 exports.createNews = async function (req, res) {
-  //console.log("NewsData is :", req.body);
+  console.log("NewsData is :", req.body);
 
   try {
-    if (req?.file) {
-      client.connect().then(() => {
-        const db = client.db("cnn-news");
-        const bucket = new mongodb.GridFSBucket(db);
+    // if (req?.file) {
+    //   client.connect().then(() => {
+    //     const db = client.db("cnn-news");
+    //     const bucket = new mongodb.GridFSBucket(db);
 
-        const file = req?.file;
-       // console.log("File is :", file);
-        const fileBuffer = file.buffer;
-        const uniqueIdentifier = uuid.v4();
+    //     const file = req?.file;
+    //    // console.log("File is :", file);
+    //     const fileBuffer = file.buffer;
+    //     const uniqueIdentifier = uuid.v4();
 
-        const newFileName = `${uniqueIdentifier}_${file.originalname}`;
+    //     const newFileName = `${uniqueIdentifier}_${file.originalname}`;
 
-        bucket
-          .openUploadStream(newFileName)
-          .end(fileBuffer)
-          .on("error", function (error) {
-            //console.log("Error uploading file", error);
-            res.status(500).send({
-              message: "Error uplading file",
-              error: error.message,
-            });
-          })
-          .on("finish", function (file) {
-            const news = new News({
-              title: req.body?.title,
-              file: newFileName,
-              newsCategory: req.body.newsCategory,
-              subCategory: req.body.subCategory,
-              type: req.body.type,
-              tag: req.body.tag,
-              editorText: req.body.editorText,
-              authorName: req.body.authorName,
-              bio:req.body.bio,
-              repoter:req.body.repoter,
-              isLiveUpdate: req.body.isLiveUpdate,
-              liveUpdateType: req.body.liveUpdateType,
-              liveUpdateHeadline: req.body.liveUpdateHeadlinie,
-            });
-            news
-              .save(news)
-              .then((data) => {
-                res.status(200).send("News Submitted Successfull");
-              })
-              .catch((error) => {
-                res.status(500).send({
-                  message: "Error saving news",
-                  error: error.message,
-                });
-              });
-            //console.log("News Submitted Successfull");
-          });
-      });
-    } else {
-      const news = new News({
-        title: req.body?.title,
-        newsCategory: req.body.newsCategory,
-        subCategory: req.body.subCategory,
-        type: req.body.type,
-        tag: req.body.tag,
-        editorText: req.body.editorText,
-        authorName: req.body.authorName,
-        bio:req.body.bio,
-        repoter:req.body.repoter,
-        isLiveUpdate: req.body.isLiveUpdate,
-        liveUpdateType: req.body.liveUpdateType,
-        liveUpdateHeadline: req.body.liveUpdateHeadlinie,
-      });
-      news
-        .save(news)
-        .then((data) => {
-          res.status(200).send("News Submitted Successfull");
-        })
-        .catch((error) => {
-          res.status(500).send({
-            message: "Error saving news",
-            error: error.message,
-          });
+    //     bucket
+    //       .openUploadStream(newFileName)
+    //       .end(fileBuffer)
+    //       .on("error", function (error) {
+    //         //console.log("Error uploading file", error);
+    //         res.status(500).send({
+    //           message: "Error uplading file",
+    //           error: error.message,
+    //         });
+    //       })
+    //       .on("finish", function (file) {
+    //         const news = new News({
+    //           title: req.body?.title,
+    //           file: newFileName,
+    //           newsCategory: req.body.newsCategory,
+    //           subCategory: req.body.subCategory,
+    //           type: req.body.type,
+    //           tag: req.body.tag,
+    //           editorText: req.body.editorText,
+    //           authorName: req.body.authorName,
+    //           bio:req.body.bio,
+    //           repoter:req.body.repoter,
+    //           isLiveUpdate: req.body.isLiveUpdate,
+    //           liveUpdateType: req.body.liveUpdateType,
+    //           liveUpdateHeadline: req.body.liveUpdateHeadlinie,
+    //         });
+    //         news
+    //           .save(news)
+    //           .then((data) => {
+    //             res.status(200).send("News Submitted Successfull");
+    //           })
+    //           .catch((error) => {
+    //             res.status(500).send({
+    //               message: "Error saving news",
+    //               error: error.message,
+    //             });
+    //           });
+    //         //console.log("News Submitted Successfull");
+    //       });
+    //   });
+    // } else {
+    //   const news = new News({
+    //     title: req.body?.title,
+    //     newsCategory: req.body.newsCategory,
+    //     subCategory: req.body.subCategory,
+    //     type: req.body.type,
+    //     tag: req.body.tag,
+    //     editorText: req.body.editorText,
+    //     authorName: req.body.authorName,
+    //     bio:req.body.bio,
+    //     repoter:req.body.repoter,
+    //     isLiveUpdate: req.body.isLiveUpdate,
+    //     liveUpdateType: req.body.liveUpdateType,
+    //     liveUpdateHeadline: req.body.liveUpdateHeadlinie,
+    //   });
+    //   news
+    //     .save(news)
+    //     .then((data) => {
+    //       res.status(200).send("News Submitted Successfull");
+    //     })
+    //     .catch((error) => {
+    //       res.status(500).send({
+    //         message: "Error saving news",
+    //         error: error.message,
+    //       });
+    //     });
+    // }
+
+    
+    const news = new News({
+      title: req.body?.title,
+      file: req.body?.file,
+      newsCategory: req.body.newsCategory,
+      subCategory: req.body.subCategory,
+      type: req.body.type,
+      tag: req.body.tag,
+      editorText: req.body.editorText,
+      authorName: req.body.authorName,
+      bio:req.body.bio,
+      repoter:req.body.repoter,
+      isLiveUpdate: req.body.isLiveUpdate,
+      liveUpdateType: req.body.liveUpdateType,
+      liveUpdateHeadline: req.body.liveUpdateHeadlinie,
+    });
+    news
+      .save(news)
+      .then((data) => {
+        res.status(200).send("News Submitted Successfull");
+      })
+      .catch((error) => {
+        res.status(500).send({
+          message: "Error saving news",
+          error: error.message,
         });
-    }
+      });
+
+
+
+
   } catch (error) {
     //console.log("Internal server error: ", error);
     res.status(500).send({
