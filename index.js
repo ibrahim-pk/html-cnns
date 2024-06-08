@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   //origin: "http://localhost:3000",
-  origin: 'https://bartaloy24.com',
+  origin: 'https://www.bartaloy24.com',
   credentials: true,
 };
 
